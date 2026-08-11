@@ -1,7 +1,10 @@
-use axum::{routing::{get, post}, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
 
-use crate::state::AppState;
 use super::handlers::{follow_user, get_follow_counts, unfollow_user};
+use crate::state::AppState;
 
 pub fn routes() -> Router<AppState> {
     Router::new()

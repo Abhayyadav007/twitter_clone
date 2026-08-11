@@ -2,10 +2,11 @@ use axum::extract::{Path, State};
 use serde_json::json;
 use uuid::Uuid;
 
+use super::repository;
 use crate::error::AppError;
 use crate::features::auth::model::CurrentUser;
+use crate::features::users::repository as user_repository;
 use crate::state::AppState;
-use super::repository;
 
 pub async fn follow_user(
     State(state): State<AppState>,
@@ -15,6 +16,10 @@ pub async fn follow_user(
     if current_user.id == target_id {
         return Err(AppError::BadRequest("cannot follow yourself".into()));
     }
+
+    user_repository::find_by_id(&state.pool, target_id)
+        .await?
+        .ok_or_else(|| AppError::NotFound("target user not found".into()))?;
 
     // idempotent — calling this twice is a no-op, not an error
     repository::create(&state.pool, current_user.id, target_id).await?;

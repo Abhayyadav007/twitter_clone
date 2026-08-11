@@ -2,8 +2,8 @@ use chrono::{DateTime, Utc};
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::error::AppError;
 use super::model::{CreateTweet, Tweet, TweetWithAuthor};
+use crate::error::AppError;
 
 pub async fn create(pool: &PgPool, user_id: Uuid, payload: CreateTweet) -> Result<Tweet, AppError> {
     let mut tx = pool.begin().await?;

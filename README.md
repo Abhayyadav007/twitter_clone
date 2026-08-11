@@ -65,6 +65,7 @@ twitter-clone/
    ```
 
 Server listens on `0.0.0.0:8080` by default (`BIND_ADDR` in `.env`).
+Set `CORS_ORIGIN` in `.env` (for example, `http://localhost:3000`) to enforce a strict allowed origin; when unset, the server uses permissive CORS for local development.
 
 ## API surface
 
@@ -102,4 +103,4 @@ All routes marked "yes" expect `Authorization: Bearer <access_token>`.
 - **Retweets, media uploads, notifications, hashtags/mentions** aren't wired up yet — they follow the exact same `model.rs` / `repository.rs` / `handlers.rs` / `routes.rs` pattern as `likes` and `follows`.
 - **Timeline is pull-based** (computed at read time via JOIN in `tweets/repository.rs::get_feed`). Fine until you have heavy fan-out; switch to a precomputed feed table if a single user follows tens of thousands of accounts.
 - **`sqlx::query_as!` / `query!` macros** normally check queries against a live DB at compile time. If you don't want that, add a `.sqlx` offline cache with `cargo sqlx prepare`, or switch to the non-macro `sqlx::query_as::<_, T>(...)` runtime API.
-- **CORS is wide open** (`Any`) for local dev — restrict `allow_origin` before deploying.
+- **CORS** is strict when `CORS_ORIGIN` is set; keep it configured in production.

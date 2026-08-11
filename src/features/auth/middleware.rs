@@ -6,9 +6,9 @@ use axum::{
     response::Response,
 };
 
-use crate::state::AppState;
 use super::jwt;
 use super::model::CurrentUser;
+use crate::state::AppState;
 
 /// Applied with `.layer(middleware::from_fn_with_state(state, auth_middleware))`
 /// on an entire Router group (e.g. all of `/api/*` except `/api/auth/*`).
@@ -34,8 +34,8 @@ pub async fn auth_middleware(
         .strip_prefix("Bearer ")
         .ok_or(StatusCode::UNAUTHORIZED)?;
 
-    let claims = jwt::verify_token(token, &state.jwt_secret)
-        .map_err(|_| StatusCode::UNAUTHORIZED)?;
+    let claims =
+        jwt::verify_token(token, &state.jwt_secret).map_err(|_| StatusCode::UNAUTHORIZED)?;
 
     req.extensions_mut().insert(CurrentUser {
         id: claims.sub,

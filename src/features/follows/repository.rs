@@ -3,7 +3,11 @@ use uuid::Uuid;
 
 use crate::error::AppError;
 
-pub async fn exists(pool: &PgPool, follower_id: Uuid, following_id: Uuid) -> Result<bool, AppError> {
+pub async fn exists(
+    pool: &PgPool,
+    follower_id: Uuid,
+    following_id: Uuid,
+) -> Result<bool, AppError> {
     let row = sqlx::query!(
         r#"SELECT EXISTS(
              SELECT 1 FROM follows WHERE follower_id = $1 AND following_id = $2

@@ -4,11 +4,11 @@ use axum::{
 };
 use uuid::Uuid;
 
+use super::model::{CreateTweet, Pagination, Tweet, TweetWithAuthor};
+use super::repository;
 use crate::error::AppError;
 use crate::features::auth::model::CurrentUser;
 use crate::state::AppState;
-use super::model::{CreateTweet, Pagination, Tweet, TweetWithAuthor};
-use super::repository;
 
 pub async fn create_tweet(
     State(state): State<AppState>,
@@ -17,7 +17,9 @@ pub async fn create_tweet(
 ) -> Result<Json<Tweet>, AppError> {
     let trimmed = payload.content.trim();
     if trimmed.is_empty() || trimmed.chars().count() > 280 {
-        return Err(AppError::BadRequest("tweet must be 1-280 characters".into()));
+        return Err(AppError::BadRequest(
+            "tweet must be 1-280 characters".into(),
+        ));
     }
 
     if let Some(parent_id) = payload.reply_to_id {
@@ -51,7 +53,9 @@ pub async fn delete_tweet(
         .ok_or_else(|| AppError::NotFound("tweet not found".into()))?;
 
     if tweet.user_id != current_user.id {
-        return Err(AppError::Forbidden("you can only delete your own tweets".into()));
+        return Err(AppError::Forbidden(
+            "you can only delete your own tweets".into(),
+        ));
     }
 
     repository::delete(&state.pool, tweet_id).await?;
