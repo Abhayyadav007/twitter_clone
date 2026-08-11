@@ -1,7 +1,7 @@
 use axum::{routing::get, Router};
 
-use crate::state::AppState;
 use super::handlers::{create_tweet, delete_tweet, get_timeline, get_tweet, get_user_tweets};
+use crate::state::AppState;
 
 pub fn routes() -> Router<AppState> {
     Router::new()

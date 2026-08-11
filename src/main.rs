@@ -7,7 +7,7 @@ use std::net::SocketAddr;
 use std::time::Duration;
 
 use sqlx::postgres::PgPoolOptions;
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
 use state::AppState;
@@ -35,11 +35,25 @@ async fn main() -> anyhow::Result<()> {
 
     let state = AppState { pool, jwt_secret };
 
-    // permissive CORS for dev — tighten allow_origin to your frontend's origin in prod
-    let cors = CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methods(Any)
-        .allow_headers(Any);
+    let cors_origin = std::env::var("CORS_ORIGIN").ok();
+    let cors = if let Some(origin) = cors_origin {
+        let value = origin.parse::<axum::http::HeaderValue>()?;
+        CorsLayer::new()
+            .allow_origin(tower_http::cors::AllowOrigin::exact(value))
+            .allow_methods([
+                axum::http::Method::GET,
+                axum::http::Method::POST,
+                axum::http::Method::PATCH,
+                axum::http::Method::DELETE,
+            ])
+            .allow_headers([
+                axum::http::header::CONTENT_TYPE,
+                axum::http::header::AUTHORIZATION,
+            ])
+    } else {
+        tracing::warn!("CORS_ORIGIN not set; using permissive CORS for local development");
+        CorsLayer::permissive()
+    };
 
     let app = routes::app_routes()
         .with_state(state)

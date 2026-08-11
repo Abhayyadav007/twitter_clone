@@ -1,7 +1,7 @@
 use axum::{routing::post, Router};
 
-use crate::state::AppState;
 use super::handlers::{login, logout, refresh, register};
+use crate::state::AppState;
 
 pub fn routes() -> Router<AppState> {
     Router::new()

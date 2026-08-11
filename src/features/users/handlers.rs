@@ -3,11 +3,11 @@ use axum::{
     Json,
 };
 
+use super::model::{UpdateUser, User, UserPublic};
+use super::repository;
 use crate::error::AppError;
 use crate::features::auth::model::CurrentUser;
 use crate::state::AppState;
-use super::model::{UpdateUser, User, UserPublic};
-use super::repository;
 
 pub async fn get_user_by_username(
     State(state): State<AppState>,
@@ -38,7 +38,9 @@ pub async fn update_me(
 ) -> Result<Json<UserPublic>, AppError> {
     if let Some(bio) = &payload.bio {
         if bio.len() > 280 {
-            return Err(AppError::BadRequest("bio must be 280 chars or fewer".into()));
+            return Err(AppError::BadRequest(
+                "bio must be 280 chars or fewer".into(),
+            ));
         }
     }
 

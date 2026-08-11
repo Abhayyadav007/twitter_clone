@@ -43,11 +43,17 @@ impl IntoResponse for AppError {
             AppError::Internal(msg) => (StatusCode::INTERNAL_SERVER_ERROR, msg.clone()),
             AppError::Sqlx(e) => {
                 tracing::error!("db error: {e:?}");
-                (StatusCode::INTERNAL_SERVER_ERROR, "database error".to_string())
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "database error".to_string(),
+                )
             }
             AppError::Jwt(e) => {
                 tracing::warn!("jwt error: {e:?}");
-                (StatusCode::UNAUTHORIZED, "invalid or expired token".to_string())
+                (
+                    StatusCode::UNAUTHORIZED,
+                    "invalid or expired token".to_string(),
+                )
             }
         };
 
