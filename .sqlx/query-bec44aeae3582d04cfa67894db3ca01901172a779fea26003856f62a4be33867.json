@@ -1,0 +1,102 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT\n            t.id,\n            t.content,\n            t.reply_to_id,\n            t.quote_tweet_id,\n            t.like_count,\n            t.retweet_count,\n            t.reply_count,\n            t.created_at,\n            u.id   AS author_id,\n            u.username AS author_username,\n            u.display_name AS author_display_name,\n            u.avatar_url AS author_avatar_url,\n            EXISTS(SELECT 1 FROM likes l WHERE l.tweet_id = t.id AND l.user_id = $1) AS \"liked_by_viewer!\",\n            EXISTS(SELECT 1 FROM retweets r WHERE r.tweet_id = t.id AND r.user_id = $1) AS \"retweeted_by_viewer!\"\n        FROM tweets t\n        JOIN users u ON u.id = t.user_id\n        WHERE (\n            t.user_id = $1\n            OR t.user_id IN (SELECT following_id FROM follows WHERE follower_id = $1)\n        )\n        AND ($2::timestamptz IS NULL OR t.created_at < $2)\n        ORDER BY t.created_at DESC\n        LIMIT $3\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "content",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "reply_to_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "quote_tweet_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 4,
+        "name": "like_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "retweet_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "reply_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "author_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 9,
+        "name": "author_username",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 10,
+        "name": "author_display_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 11,
+        "name": "author_avatar_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 12,
+        "name": "liked_by_viewer!",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 13,
+        "name": "retweeted_by_viewer!",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Timestamptz",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      null,
+      null
+    ]
+  },
+  "hash": "bec44aeae3582d04cfa67894db3ca01901172a779fea26003856f62a4be33867"
+}

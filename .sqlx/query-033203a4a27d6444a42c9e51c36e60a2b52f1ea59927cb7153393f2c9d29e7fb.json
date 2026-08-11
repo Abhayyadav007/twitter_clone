@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE tweets SET like_count = GREATEST(like_count - 1, 0) WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "033203a4a27d6444a42c9e51c36e60a2b52f1ea59927cb7153393f2c9d29e7fb"
+}
