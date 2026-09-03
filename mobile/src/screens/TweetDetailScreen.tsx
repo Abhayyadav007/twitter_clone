@@ -22,11 +22,12 @@ export function TweetDetailScreen({ route, navigation }: Props) {
   const [liked, setLiked] = useState(false);
 
   const load = useCallback(async () => {
+    setLoading(true);
     try {
       const data = await tweetsApi.getTweet(tweetId);
       setTweet(data);
     } catch (err) {
-      Alert.alert('Error', err instanceof ApiError ? err.message : 'Tweet not found');
+      Alert.alert('Error', err instanceof ApiError ? err.message : 'Post not found');
       navigation.goBack();
     } finally {
       setLoading(false);
@@ -58,7 +59,7 @@ export function TweetDetailScreen({ route, navigation }: Props) {
 
   async function onDelete() {
     if (!tweet) return;
-    Alert.alert('Delete chirp?', 'This cannot be undone.', [
+    Alert.alert('Delete post?', 'This cannot be undone.', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete',

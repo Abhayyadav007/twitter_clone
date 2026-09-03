@@ -29,13 +29,25 @@ export function TweetCard({ tweet, onPress, onAuthorPress, onLikePress }: Props)
 
   return (
     <Pressable style={styles.card} onPress={onPress}>
-      <Pressable onPress={onAuthorPress} hitSlop={8}>
+      <Pressable
+        onPress={(event) => {
+          event.stopPropagation();
+          onAuthorPress?.();
+        }}
+        hitSlop={8}
+      >
         <Avatar name={displayName} uri={tweet.author_avatar_url} size={44} />
       </Pressable>
 
       <View style={styles.body}>
         <View style={styles.header}>
-          <Pressable onPress={onAuthorPress} style={styles.nameRow}>
+          <Pressable
+            onPress={(event) => {
+              event.stopPropagation();
+              onAuthorPress?.();
+            }}
+            style={styles.nameRow}
+          >
             <Text style={styles.displayName} numberOfLines={1}>
               {displayName}
             </Text>
@@ -54,7 +66,14 @@ export function TweetCard({ tweet, onPress, onAuthorPress, onLikePress }: Props)
             <Text style={styles.actionCount}>{tweet.reply_count}</Text>
           </View>
 
-          <Pressable style={styles.action} onPress={onLikePress} hitSlop={8}>
+          <Pressable
+            style={styles.action}
+            onPress={(event) => {
+              event.stopPropagation();
+              onLikePress?.();
+            }}
+            hitSlop={8}
+          >
             <Ionicons
               name={tweet.liked_by_viewer ? 'heart' : 'heart-outline'}
               size={18}
@@ -81,9 +100,9 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    backgroundColor: colors.bg,
+    backgroundColor: colors.white,
   },
   body: {
     flex: 1,

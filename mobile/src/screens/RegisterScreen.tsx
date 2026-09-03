@@ -66,7 +66,7 @@ export function RegisterScreen({ navigation }: Props) {
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.brand}>Chirp</Text>
+        <Text style={styles.brand}>BlueGram</Text>
         <Text style={styles.title}>Create your account</Text>
 
         <View style={styles.form}>

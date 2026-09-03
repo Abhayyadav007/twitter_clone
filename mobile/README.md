@@ -1,4 +1,4 @@
-# Chirp — React Native (Expo) client
+# BlueGram — React Native (Expo) client
 
 Mobile app for the Axum twitter-clone API.
 
@@ -26,10 +26,10 @@ Ensure the Rust backend is running (`cargo run` from repo root) and Postgres is 
 
 - Register / login / logout with JWT + refresh rotation
 - Home timeline with pull-to-refresh and cursor pagination
-- Compose chirps (280 chars)
+- Compose posts (280 chars)
 - Like / unlike
 - Profile edit + follow counts
 - Public user profiles with follow/unfollow
-- Tweet detail + owner delete
+- Post detail + owner delete
 
 Tokens are stored in Expo SecureStore (Keychain / EncryptedSharedPreferences).

@@ -116,7 +116,7 @@ export function UserProfileScreen({ route, navigation }: Props) {
                 style={{ marginTop: spacing.md }}
               />
             ) : null}
-            <Text style={styles.section}>Chirps</Text>
+            <Text style={styles.section}>Posts</Text>
           </View>
         }
         renderItem={({ item }) => (
@@ -127,7 +127,7 @@ export function UserProfileScreen({ route, navigation }: Props) {
             </Text>
           </View>
         )}
-        ListEmptyComponent={<Text style={styles.empty}>No chirps yet.</Text>}
+        ListEmptyComponent={<Text style={styles.empty}>No posts yet.</Text>}
       />
     </View>
   );

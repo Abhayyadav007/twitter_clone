@@ -82,7 +82,7 @@ export function HomeScreen() {
   return (
     <View style={styles.flex}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Home</Text>
+        <Text style={styles.headerTitle}>Feed</Text>
       </View>
       <FlatList
         data={tweets}
@@ -114,8 +114,8 @@ export function HomeScreen() {
         onEndReachedThreshold={0.4}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>Your timeline is empty</Text>
-            <Text style={styles.emptyBody}>Follow people or post your first chirp.</Text>
+            <Text style={styles.emptyTitle}>Your feed is empty</Text>
+            <Text style={styles.emptyBody}>Follow people or share your first post.</Text>
           </View>
         }
         contentContainerStyle={tweets.length === 0 ? styles.emptyContainer : undefined}
