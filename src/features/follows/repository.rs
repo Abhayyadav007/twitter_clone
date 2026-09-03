@@ -3,6 +3,7 @@ use uuid::Uuid;
 
 use crate::error::AppError;
 
+#[allow(dead_code)]
 pub async fn exists(
     pool: &PgPool,
     follower_id: Uuid,

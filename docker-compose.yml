@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: twitter_clone
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d twitter_clone']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    ports:
+      - '8080:8080'
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/twitter_clone
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me}
+      BIND_ADDR: 0.0.0.0:8080
+      RUST_LOG: info,sqlx=warn
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

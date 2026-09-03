@@ -42,6 +42,7 @@ pub struct RefreshRequest {
 #[derive(Debug, Clone)]
 pub struct CurrentUser {
     pub id: Uuid,
+    #[allow(dead_code)]
     pub username: String,
 }
 

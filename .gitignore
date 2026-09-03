@@ -1,7 +1,6 @@
 # --- Rust / Cargo ---
 /target/
 **/target/
-Cargo.lock       # only ignore this if you're building a library; for binaries/services, COMMIT it
 
 # --- Environment / secrets ---
 .env
@@ -11,8 +10,7 @@ Cargo.lock       # only ignore this if you're building a library; for binaries/s
 *.key
 
 # --- sqlx ---
-# If you use `cargo sqlx prepare` with offline mode, KEEP .sqlx/ committed
-# (don't ignore it — it's needed for CI builds without a live DB)
+# Keep .sqlx/ committed for offline CI builds
 
 # --- Editor / IDE ---
 .vscode/
@@ -30,6 +28,13 @@ debug/
 # --- Docker ---
 docker-compose.override.yml
 
-# --- If workspace has a frontend (Leptos/Trunk) ---
-/dist/
-node_modules/
+# --- Mobile (Expo / React Native) ---
+mobile/node_modules/
+mobile/.expo/
+mobile/dist/
+mobile/web-build/
+mobile/.env
+mobile/*.jks
+mobile/*.p8
+mobile/*.p12
+mobile/*.mobileprovision

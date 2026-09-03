@@ -19,6 +19,7 @@ use crate::state::AppState;
 /// Use this OR the `CurrentUser` extractor per-handler — not both. The extractor
 /// is simpler for mixed public/private routes in the same router; this middleware
 /// is cleaner when an entire nested router is private (e.g. everything under `/api`).
+#[allow(dead_code)]
 pub async fn auth_middleware(
     State(state): State<AppState>,
     mut req: Request<Body>,

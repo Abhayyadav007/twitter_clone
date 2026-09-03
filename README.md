@@ -1,65 +1,34 @@
-# Twitter Clone — Axum Backend
+# Twitter Clone — Axum API + React Native (Expo)
 
-## File tree
+Full-stack Twitter-style clone: Rust/Axum backend and Expo React Native client.
+
+## Structure
 
 ```
 twitter-clone/
 ├── Cargo.toml
+├── Dockerfile
 ├── .env.example
 ├── migrations/
-│   └── 0001_init.sql
-└── src/
-    ├── main.rs              # entrypoint: DB pool, migrations, CORS, tracing, server start
-    ├── state.rs             # AppState (PgPool + jwt_secret) shared across handlers
-    ├── error.rs              # AppError enum + IntoResponse impl (central error handling)
-    ├── routes.rs             # aggregates every feature's routes under /api
-    └── features/
-        ├── mod.rs
-        ├── auth/
-        │   ├── mod.rs
-        │   ├── model.rs      # Claims, CurrentUser extractor, AuthResponse, LoginRequest
-        │   ├── jwt.rs        # create/verify access + refresh tokens
-        │   ├── password.rs   # argon2 hash/verify
-        │   ├── middleware.rs # optional group-level auth middleware (alt to extractor)
-        │   ├── handlers.rs   # register, login, refresh, logout
-        │   └── routes.rs
-        ├── users/
-        │   ├── mod.rs
-        │   ├── model.rs      # User, CreateUser, UpdateUser, UserPublic
-        │   ├── repository.rs
-        │   ├── handlers.rs   # get_me, update_me, get_user_by_username
-        │   └── routes.rs
-        ├── tweets/
-        │   ├── mod.rs
-        │   ├── model.rs      # Tweet, CreateTweet, TweetWithAuthor, Pagination
-        │   ├── repository.rs # includes the timeline feed JOIN query
-        │   ├── handlers.rs   # create/get/delete tweet, user tweets, timeline
-        │   └── routes.rs
-        ├── follows/
-        │   ├── mod.rs, model.rs, repository.rs, handlers.rs, routes.rs
-        └── likes/
-            ├── mod.rs, model.rs, repository.rs, handlers.rs, routes.rs
+├── src/                    # Axum API
+├── mobile/                 # Expo React Native app
+└── .github/workflows/      # Enterprise CI/CD
 ```
 
-## Setup
+## Backend setup
 
-1. **Postgres running locally** (or via Docker):
+1. **Postgres:**
    ```bash
    docker run --name pg -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=twitter_clone -p 5432:5432 -d postgres:16
    ```
 
-2. **Copy env file:**
+2. **Env:**
    ```bash
    cp .env.example .env
-   # edit JWT_SECRET to a real random string
+   # set a strong JWT_SECRET
    ```
 
-3. **Install sqlx-cli (optional, only needed if you edit queries and want compile-time checks):**
-   ```bash
-   cargo install sqlx-cli --no-default-features --features postgres
-   ```
-
-4. **Run** — migrations run automatically on startup via `sqlx::migrate!` in `main.rs`:
+3. **Run** (migrations apply on startup):
    ```bash
    cargo run
    ```
@@ -67,40 +36,74 @@ twitter-clone/
 Server listens on `0.0.0.0:8080` by default (`BIND_ADDR` in `.env`).
 Set `CORS_ORIGIN` in `.env` (for example, `http://localhost:3000`) to enforce a strict allowed origin; when unset, the server uses permissive CORS for local development.
 
+## Mobile setup
+
+```bash
+cd mobile
+cp .env.example .env
+npm install --legacy-peer-deps
+npm start
+```
+
+| Environment | `EXPO_PUBLIC_API_URL` |
+|---|---|
+| iOS Simulator | `http://localhost:8080` |
+| Android Emulator | `http://10.0.2.2:8080` |
+| Physical device | `http://<LAN-IP>:8080` |
+
+See [mobile/README.md](mobile/README.md).
+
 ## API surface
 
-| Method | Path | Auth required |
+| Method | Path | Auth |
 |---|---|---|
 | POST | `/api/auth/register` | no |
 | POST | `/api/auth/login` | no |
-| POST | `/api/auth/refresh` | no (needs valid refresh token) |
+| POST | `/api/auth/refresh` | refresh body |
 | POST | `/api/auth/logout` | yes |
-| GET  | `/api/users/me` | yes |
-| PATCH| `/api/users/me` | yes |
-| GET  | `/api/users/{username}` | no |
-| GET  | `/api/tweets` | yes (this is the home timeline) |
-| POST | `/api/tweets` | yes |
-| GET  | `/api/tweets/{id}` | no |
-| DELETE | `/api/tweets/{id}` | yes (must be owner) |
-| GET  | `/api/tweets/by-user/{user_id}` | no |
-| POST | `/api/follows/{target_id}` | yes |
-| DELETE | `/api/follows/{target_id}` | yes |
-| GET  | `/api/follows/counts/{user_id}` | no |
-| POST | `/api/likes/{tweet_id}` | yes |
-| DELETE | `/api/likes/{tweet_id}` | yes |
+| GET / PATCH | `/api/users/me` | yes |
+| GET | `/api/users/{username}` | no |
+| GET / POST | `/api/tweets` | yes |
+| GET / DELETE | `/api/tweets/{id}` | GET no / DELETE yes |
+| GET | `/api/tweets/by-user/{user_id}` | no |
+| POST / DELETE | `/api/follows/{target_id}` | yes |
+| GET | `/api/follows/counts/{user_id}` | no |
+| POST / DELETE | `/api/likes/{tweet_id}` | yes |
 
-All routes marked "yes" expect `Authorization: Bearer <access_token>`.
+Protected routes expect `Authorization: Bearer <access_token>`.
 
 ## Auth flow
 
-1. `POST /api/auth/register` or `/login` → returns `{ access_token, refresh_token, user }`.
-2. Send `access_token` as `Authorization: Bearer <token>` on protected routes (15 min TTL).
-3. When it expires, `POST /api/auth/refresh` with `{ refresh_token, user_id }` → returns a fresh pair. The old refresh token is deleted (rotation) so it can't be reused.
-4. `POST /api/auth/logout` revokes all refresh tokens for that user.
+1. Register/login → `{ access_token, refresh_token, user }`
+2. Use access token (15m TTL) on protected routes
+3. Refresh with `{ refresh_token, user_id }` (rotation)
+4. Logout revokes all refresh tokens for the user
 
-## Notes / things to extend next
+## CI / CD (enterprise)
 
-- **Retweets, media uploads, notifications, hashtags/mentions** aren't wired up yet — they follow the exact same `model.rs` / `repository.rs` / `handlers.rs` / `routes.rs` pattern as `likes` and `follows`.
-- **Timeline is pull-based** (computed at read time via JOIN in `tweets/repository.rs::get_feed`). Fine until you have heavy fan-out; switch to a precomputed feed table if a single user follows tens of thousands of accounts.
-- **`sqlx::query_as!` / `query!` macros** normally check queries against a live DB at compile time. If you don't want that, add a `.sqlx` offline cache with `cargo sqlx prepare`, or switch to the non-macro `sqlx::query_as::<_, T>(...)` runtime API.
+| Workflow | Purpose |
+|---|---|
+| `backend-ci.yml` | rustfmt, clippy, Postgres integration tests, release build |
+| `mobile-ci.yml` | Prettier, ESLint, TypeScript, expo-doctor |
+| `security.yml` | Gitleaks, cargo-audit, npm audit, Trivy FS, SBOM |
+| `codeql.yml` | CodeQL for Rust + JS/TS |
+| `dependency-review.yml` | PR dependency / license gate |
+| `container.yml` | Multi-stage Docker build → GHCR + image scan |
+| `dependabot.yml` | Weekly Cargo / npm / Actions updates |
+
+## Docker
+
+```bash
+docker build -t twitter-clone .
+docker run --rm -p 8080:8080 \
+  -e DATABASE_URL=postgres://... \
+  -e JWT_SECRET=... \
+  twitter-clone
+```
+
+## Notes
+
+- Retweets / media / notifications are not wired yet.
+- Timeline is pull-based (`JOIN` at read time).
 - **CORS** is strict when `CORS_ORIGIN` is set; keep it configured in production.
+- Keep `.sqlx/` committed so CI can build with `SQLX_OFFLINE=true`.

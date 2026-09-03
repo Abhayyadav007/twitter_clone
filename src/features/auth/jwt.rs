@@ -5,6 +5,7 @@ use uuid::Uuid;
 use super::model::Claims;
 
 pub const ACCESS_TOKEN_TTL_MINS: i64 = 15;
+#[allow(dead_code)]
 pub const REFRESH_TOKEN_TTL_DAYS: i64 = 30;
 
 pub fn create_access_token(

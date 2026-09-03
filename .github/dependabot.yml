@@ -1,0 +1,51 @@
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - rust
+    groups:
+      axum-stack:
+        patterns:
+          - 'axum*'
+          - 'tower*'
+          - 'tokio*'
+      sqlx:
+        patterns:
+          - 'sqlx*'
+
+  - package-ecosystem: npm
+    directory: /mobile
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - mobile
+    groups:
+      expo:
+        patterns:
+          - 'expo*'
+          - '@expo/*'
+      react-navigation:
+        patterns:
+          - '@react-navigation/*'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - ci

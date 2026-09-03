@@ -3,6 +3,7 @@ use uuid::Uuid;
 
 use crate::error::AppError;
 
+#[allow(dead_code)]
 pub async fn exists(pool: &PgPool, user_id: Uuid, tweet_id: Uuid) -> Result<bool, AppError> {
     let row = sqlx::query!(
         r#"SELECT EXISTS(
