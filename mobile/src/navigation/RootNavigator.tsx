@@ -38,28 +38,39 @@ function MainTabs() {
           backgroundColor: colors.bg,
           borderTopColor: colors.border,
         },
-        tabBarIcon: ({ color, size }) => {
-          const map: Record<string, keyof typeof Ionicons.glyphMap> = {
-            HomeTab: 'home',
-            ComposeTab: 'create',
-            ProfileTab: 'person',
+        tabBarIcon: ({ color, size, focused }) => {
+          const map: Record<
+            string,
+            { active: keyof typeof Ionicons.glyphMap; inactive: keyof typeof Ionicons.glyphMap }
+          > = {
+            HomeTab: { active: 'home', inactive: 'home-outline' },
+            ComposeTab: { active: 'add-circle', inactive: 'add-circle-outline' },
+            ProfileTab: {
+              active: 'person-circle',
+              inactive: 'person-circle-outline',
+            },
           };
+          const icon = map[route.name];
           return (
-            <Ionicons name={map[route.name] ?? 'ellipse'} size={size} color={color} />
+            <Ionicons
+              name={icon ? (focused ? icon.active : icon.inactive) : 'ellipse'}
+              size={size}
+              color={color}
+            />
           );
         },
       })}
     >
-      <Tab.Screen name="HomeTab" component={HomeScreen} options={{ title: 'Home' }} />
+      <Tab.Screen name="HomeTab" component={HomeScreen} options={{ title: 'Feed' }} />
       <Tab.Screen
         name="ComposeTab"
         component={ComposeScreen}
-        options={{ title: 'Compose' }}
+        options={{ title: 'New Post' }}
       />
       <Tab.Screen
         name="ProfileTab"
         component={ProfileScreen}
-        options={{ title: 'Profile' }}
+        options={{ title: 'Account' }}
       />
     </Tab.Navigator>
   );
@@ -76,7 +87,7 @@ function AppNavigator() {
       <RootStack.Screen
         name="TweetDetail"
         component={TweetDetailScreen}
-        options={{ title: 'Chirp' }}
+        options={{ title: 'Post' }}
       />
       <RootStack.Screen
         name="UserProfile"

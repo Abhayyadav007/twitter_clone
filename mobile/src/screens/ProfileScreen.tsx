@@ -155,7 +155,7 @@ export function ProfileScreen() {
               </View>
             )}
 
-            <Text style={styles.section}>Your chirps</Text>
+            <Text style={styles.section}>Your posts</Text>
           </View>
         }
         renderItem={({ item }) => (
@@ -171,7 +171,7 @@ export function ProfileScreen() {
             />
           </View>
         )}
-        ListEmptyComponent={<Text style={styles.empty}>No chirps yet.</Text>}
+        ListEmptyComponent={<Text style={styles.empty}>No posts yet.</Text>}
       />
     </View>
   );

@@ -37,7 +37,7 @@ export function ComposeScreen() {
       setContent('');
       navigation.navigate('HomeTab');
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Could not post chirp.';
+      const message = err instanceof ApiError ? err.message : 'Could not share post.';
       Alert.alert('Failed', message);
     } finally {
       setLoading(false);
@@ -50,9 +50,9 @@ export function ComposeScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Compose</Text>
+        <Text style={styles.headerTitle}>New Post</Text>
         <Button
-          title="Post"
+          title="Share"
           onPress={onPost}
           loading={loading}
           disabled={!canPost}
@@ -70,7 +70,7 @@ export function ComposeScreen() {
           style={styles.input}
           multiline
           autoFocus
-          placeholder="What's happening?"
+          placeholder="Write a caption..."
           placeholderTextColor={colors.textSecondary}
           value={content}
           onChangeText={setContent}
