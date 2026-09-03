@@ -1,0 +1,14 @@
+.git
+.target
+mobile/node_modules
+mobile/.expo
+mobile/dist
+**/.DS_Store
+.env
+.env.*
+!.env.example
+*.md
+!README.md
+.github
+.vscode
+.idea

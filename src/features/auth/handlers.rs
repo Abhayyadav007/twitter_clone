@@ -1,4 +1,5 @@
 use axum::{extract::State, Json};
+use uuid::Uuid;
 
 use crate::error::AppError;
 use crate::features::users::model::CreateUser;
