@@ -41,7 +41,10 @@ function MainTabs() {
         tabBarIcon: ({ color, size, focused }) => {
           const map: Record<
             string,
-            { active: keyof typeof Ionicons.glyphMap; inactive: keyof typeof Ionicons.glyphMap }
+            {
+              active: keyof typeof Ionicons.glyphMap;
+              inactive: keyof typeof Ionicons.glyphMap;
+            }
           > = {
             HomeTab: { active: 'home', inactive: 'home-outline' },
             ComposeTab: { active: 'add-circle', inactive: 'add-circle-outline' },
